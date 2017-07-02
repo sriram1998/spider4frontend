@@ -1,0 +1,148 @@
+<html>
+<head>
+<title>WEATHER APP</title>
+<style>
+	
+	#map{
+		height:100%;
+		width:50%;
+	}
+	 
+      
+    
+      #w  {position: absolute;
+      	margin-top: -300px;
+      	margin-left:60%;
+
+    width: 300px;
+    border: 25px solid green;
+    padding: 25px;
+    
+}
+#b{position:absolute;
+
+width: 10%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin-top:-26.5%;
+    margin-left: 75%;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+input[type=text], select {position:absolute;
+    margin-top: -26.5%;
+    margin-left:60%;
+    width: 13%;
+    padding: 12px 20px;
+  
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+h2 { position: absolute;
+    display: block;
+    font-size: 0.7em;
+    margin-top: -40%;
+    
+    margin-left: 60%;
+    
+    font-weight: bold;
+}
+
+      
+      
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDZoO-f0JZUt6PaS0z6oxw5JnSam7QoW7I&libraries=places&callback=initMap"
+    async defer></script>
+<script>
+var geocoder;
+var cityName;
+	var country;
+	var des;
+	var temp;
+	
+function initMap()
+{var infoWindow;
+var options={
+	zoom:8,
+	center:{lat:13.0827,lng:80.2707}
+
+
+}
+geocoder      =   new google.maps.Geocoder(); 
+var map=new google.maps.Map(document.getElementById("map"),options);
+var autocomplete = new  google.maps.places.Autocomplete(document.getElementById("city"),{ types: ['(cities)']});
+google.maps.event.addListener(map,'click',function(event){
+
+
+var apiCall='http://api.openweathermap.org/data/2.5/weather?lat=' + event.latLng.lat() + '&lon=' + event.latLng.lng() + '&appid=cedf22e03df57948192bef2653fca45e';
+$.getJSON(apiCall,weatherCallBack);
+function weatherCallBack(weatherData)
+{ cityName=weatherData.name;
+	 country=weatherData.sys.country;
+	 des=weatherData.weather[0].description;
+	 temp=weatherData.main.temp;
+	
+
+}
+	
+	var marker=new google.maps.Marker({
+		position:event.latLng,
+		map:map
+	});
+
+	
+	marker.addListener('click',function(event2){
+
+var apiCall2='http://api.openweathermap.org/data/2.5/weather?lat=' + event2.latLng.lat() + '&lon=' + event2.latLng.lng() + '&appid=cedf22e03df57948192bef2653fca45e';
+$.getJSON(apiCall2,weatherCallBack2);
+function weatherCallBack2(weatherData1)
+{ 
+	
+	infoWindow=new google.maps.InfoWindow({
+		content:'<div id="info"> The Place name is: '+weatherData1.name+ '<br></br>'+ 'The country is: '+ weatherData1.sys.country+ '<br></br>' + 'Current weather is: '+ weatherData1.weather[0].description + '<br></br>'+ 'Temperature is: '+ weatherData1.main.temp+ '</div>' 
+	});
+	infoWindow.open(map,marker);
+}
+
+		 
+		
+		
+	});
+	});
+	
+
+
+}
+function displayWeather()
+{document.getElementById("w").value="";
+	var inputCity=document.getElementById("city").value;
+
+	var apiCall='http://api.openweathermap.org/data/2.5/weather?q=' + inputCity + '&appid=cedf22e03df57948192bef2653fca45e';                                         
+
+$.getJSON(apiCall,weatherCallBack);
+function weatherCallBack(weatherData)
+{   
+	var cityName=weatherData.name;
+	var country=weatherData.sys.country;
+	var des=weatherData.weather[0].description;
+	var temp=weatherData.main.temp;
+	
+document.getElementById("w").innerHTML="The Place name is : "+ cityName + "<br></br>" + ' the country is: ' + country + '<br></br>' + 'Current weather is: '+ des+ '<br></br>' + 'The Temperature is :'+ temp;
+}}
+</script>
+<input type="text" id="city">
+<button onclick="displayWeather()" id="b">SEARCH</button> 
+<h2>CLICK ON THE MAP MARKER TO VIEW THE WEATHER AT THAT LOCATION, OR SEARCH BY THE CITY NAME</h2>
+<div id="w">WEATHER DETAILS</div>
+</body>
+</html>
